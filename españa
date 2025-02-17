@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Mascotas</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-color: #f8f9fa;
+            margin: 0; 
+            padding: 0; 
+            text-align: center;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 20px auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 { color: #ff5733; }
+        input, button {
+            display: block; 
+            width: calc(100% - 20px); 
+            margin: 10px auto; 
+            padding: 10px; 
+            border-radius: 5px; 
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #ff5733;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #e04e1d;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #resultado {
+            border: 1px solid #ccc; 
+            padding: 15px; 
+            margin-top: 10px; 
+            background: #f1f1f1; 
+            border-radius: 5px;
+        }
+        .animate {
+            animation: fadeOut 1s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Registro de Mascotas</h2>
+        <input type="text" id="buscarNombre" placeholder="Buscar por nombre...">
+        <button onclick="buscarMascota()">Buscar</button>
+        
+        <h3>Agregar o Editar Mascota</h3>
+        <input type="text" id="casa" placeholder="Casa que corresponde">
+        <input type="text" id="nombre" placeholder="Nombre del gato">
+        <input type="text" id="chip" placeholder="Chip">
+        <input type="text" id="peso" placeholder="Peso">
+        <input type="text" id="alimentacion" placeholder="Alimentación">
+        <input type="text" id="enfermedades" placeholder="Enfermedades">
+        <input type="text" id="hospital" placeholder="Hospital o clínica">
+        <input type="text" id="especialidades" placeholder="Especialidades médicas">
+        <input type="text" id="medicamentos" placeholder="Medicamentos">
+        <input type="text" id="observaciones" placeholder="Observaciones">
+        <button onclick="agregarMascota()">Guardar Mascota</button>
+        
+        <h3>Resultado de la búsqueda</h3>
+        <div id="resultado"></div>
+    
+        <div id="mensaje" style="display: none; color: green; font-weight: bold; margin-top: 10px;">¡Acción completada!</div>
+    </div>
+    
+    <script>
+        function mostrarAnimacion() {
+            let mensaje = document.getElementById('mensaje');
+            mensaje.style.display = 'block';
+            setTimeout(() => {
+                mensaje.classList.add('animate');
+                setTimeout(() => {
+                    mensaje.style.display = 'none';
+                    mensaje.classList.remove('animate');
+                }, 1000);
+            }, 500);
+        }
+
+        function agregarMascota() {
+            let mascota = {
+                casa: document.getElementById('casa').value,
+                nombre: document.getElementById('nombre').value,
+                chip: document.getElementById('chip').value,
+                peso: document.getElementById('peso').value,
+                alimentacion: document.getElementById('alimentacion').value,
+                enfermedades: document.getElementById('enfermedades').value,
+                hospital: document.getElementById('hospital').value,
+                especialidades: document.getElementById('especialidades').value,
+                medicamentos: document.getElementById('medicamentos').value,
+                observaciones: document.getElementById('observaciones').value
+            };
+            
+            let mascotas = JSON.parse(localStorage.getItem('mascotas')) || [];
+            let index = mascotas.findIndex(m => m.nombre.toLowerCase() === mascota.nombre.toLowerCase());
+            if (index !== -1) {
+                mascotas[index] = mascota; 
+            } else {
+                mascotas.push(mascota);
+            }
+            localStorage.setItem('mascotas', JSON.stringify(mascotas));
+            mostrarAnimacion();
+        }
+        
+        function buscarMascota() {
+            let nombreBuscado = document.getElementById('buscarNombre').value.toLowerCase();
+            let mascotas = JSON.parse(localStorage.getItem('mascotas')) || [];
+            let resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = '';
+            
+            let mascotaEncontrada = mascotas.find(m => m.nombre.toLowerCase() === nombreBuscado);
+            
+            if (mascotaEncontrada) {
+                resultadoDiv.innerHTML = `
+                    <p><strong>Casa:</strong> ${mascotaEncontrada.casa}</p>
+                    <p><strong>Nombre:</strong> ${mascotaEncontrada.nombre}</p>
+                    <p><strong>Chip:</strong> ${mascotaEncontrada.chip}</p>
+                    <p><strong>Peso:</strong> ${mascotaEncontrada.peso}</p>
+                    <p><strong>Alimentación:</strong> ${mascotaEncontrada.alimentacion}</p>
+                    <p><strong>Enfermedades:</strong> ${mascotaEncontrada.enfermedades}</p>
+                    <p><strong>Hospital:</strong> ${mascotaEncontrada.hospital}</p>
+                    <p><strong>Especialidades:</strong> ${mascotaEncontrada.especialidades}</p>
+                    <p><strong>Medicamentos:</strong> ${mascotaEncontrada.medicamentos}</p>
+                    <p><strong>Observaciones:</strong> ${mascotaEncontrada.observaciones}</p>
+                `;
+                document.getElementById('casa').value = mascotaEncontrada.casa;
+                document.getElementById('nombre').value = mascotaEncontrada.nombre;
+                document.getElementById('chip').value = mascotaEncontrada.chip;
+                document.getElementById('peso').value = mascotaEncontrada.peso;
+                document.getElementById('alimentacion').value = mascotaEncontrada.alimentacion;
+                document.getElementById('enfermedades').value = mascotaEncontrada.enfermedades;
+                document.getElementById('hospital').value = mascotaEncontrada.hospital;
+                document.getElementById('especialidades').value = mascotaEncontrada.especialidades;
+                document.getElementById('medicamentos').value = mascotaEncontrada.medicamentos;
+                document.getElementById('observaciones').value = mascotaEncontrada.observaciones;
+            } else {
+                resultadoDiv.innerHTML = '<p>Mascota no encontrada.</p>';
+            }
+            mostrarAnimacion();
+        }
+    </script>
+</body>
+</html>
